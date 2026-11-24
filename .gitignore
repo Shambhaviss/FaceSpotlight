@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# Dataset
+dataset/
+
+# Angular
+node_modules/
+.angular/
+dist/
+coverage/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
