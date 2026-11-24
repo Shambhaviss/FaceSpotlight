@@ -63,4 +63,56 @@ pip install -r requirements.txt
 uvicorn app:app --reload
 ```
 
-Backend API
+Backend API:
+
+`http://127.0.0.1:8000`
+
+API documentation:
+
+`http://127.0.0.1:8000/docs`
+
+### 3. Run the Frontend
+
+Open another terminal from the project root:
+
+```bash
+cd frontend
+npm install
+npx ng serve
+```
+
+Open the application:
+
+`http://localhost:4200`
+
+## Model Evaluation
+
+The model was evaluated using two separate evaluation methods:
+
+| Evaluation | Result |
+|---|---:|
+| Recognition categories | 9 |
+| 5-Fold Stratified Cross-Validation Accuracy | 83.50% |
+| External Evaluation Accuracy | 66.1% |
+| Successfully Processed External Images | 59 |
+
+*Cross-validation and external evaluation results are reported separately.*
+
+## Model Limitations
+
+- The model performs closed-set classification and predicts only among the 9 celebrity categories used during training.
+- Recognition accuracy can be affected by lighting, facial expressions, image quality, and face detection.
+- Some external images may be misclassified, particularly when facial appearance differs from the training samples.
+
+## Future Improvements
+
+- Expand the celebrity dataset.
+- Improve face detection and recognition accuracy.
+- Add support for unknown-face detection.
+- Improve model generalization across different lighting conditions and image qualities.
+
+## Author
+
+**Shambhavi Shrivastava**
+
+GitHub: [Shambhaviss](https://github.com/Shambhaviss)
