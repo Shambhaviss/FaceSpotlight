@@ -1,23 +1,4 @@
-
-# Python
-__pycache__/
-*.py[cod]
-.ipynb_checkpoints/
-.venv/
-venv/
-.env
-
-# Angular
 node_modules/
 .angular/
 dist/
 coverage/
-
-# IDE and OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-
-# Training dataset
-dataset/
