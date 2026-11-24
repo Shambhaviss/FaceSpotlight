@@ -1,0 +1,694 @@
+<div class="app-shell" [class.dark-theme]="isDarkMode()">
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <a class="brand" href="#home" (click)="setActiveSection('home')">
+      <span class="brand-mark">FS</span>
+      <span>Face<span class="brand-accent">Spotlight</span></span>
+    </a>
+
+    <nav class="desktop-nav">
+      <a href="#home" (click)="setActiveSection('home')">Dashboard</a>
+      <a href="#recognize" (click)="setActiveSection('recognize')">Recognize</a>
+      <a href="#gallery" (click)="setActiveSection('gallery')">Gallery</a>
+      <a href="#history" (click)="setActiveSection('history')">History</a>
+      <a href="#analytics" (click)="setActiveSection('analytics')">Analytics</a>
+      <a href="#model-insights" (click)="setActiveSection('model-insights')">Model Insights</a>
+      <a href="#evaluation" (click)="setActiveSection('evaluation')">Evaluation</a>
+      <a href="#about" (click)="setActiveSection('about')">About</a>
+    </nav>
+
+    <button class="theme-button" type="button" (click)="toggleTheme()">
+      {{ isDarkMode() ? '☀ Light' : '☾ Dark' }}
+    </button>
+  </header>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <section id="home" class="section-wrap">
+
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">FACE RECOGNITION PLATFORM</div>
+
+          <h1>Discover the Face Behind the <span>Image.</span></h1>
+
+          <p>
+            Upload a photograph and identify one of the nine supported
+            celebrity categories using our HOG feature extraction and
+            machine learning classification system.
+          </p>
+
+          <div class="hero-actions">
+            <button class="primary-button" (click)="setActiveSection('recognize')">
+              Start Recognition →
+            </button>
+
+            <button class="secondary-button" (click)="setActiveSection('gallery')">
+              Explore Gallery
+            </button>
+          </div>
+
+          <div class="hero-note">
+            <span class="live-dot"></span>
+            Python · OpenCV · HOG · RBF SVM · FastAPI · Angular
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="face-card">
+            <div class="face-placeholder">
+              <div class="face-head"></div>
+              <div class="face-body"></div>
+              <div class="scan-line"></div>
+              <div class="face-tag"><b>AI</b> FACE ANALYSIS</div>
+            </div>
+          </div>
+          <div class="visual-caption">
+            <strong>FaceSpotlight AI</strong>
+            <span>Celebrity classification</span>
+          </div>
+          <div class="float-chip chip-top">9 Celebrity Classes</div>
+          <div class="float-chip chip-bottom">HOG + SVM</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-icon">◎</span>
+          <strong>{{ totalPredictions() }}</strong>
+          <span>Total Predictions</span>
+          <small>Saved in this browser</small>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">♙</span>
+          <strong>9</strong>
+          <span>Supported Celebrities</span>
+          <small>Known output classes</small>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">★</span>
+          <strong>{{ mostPredictedCelebrity() }}</strong>
+          <span>Most Predicted</span>
+          <small>Based on saved history</small>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">✓</span>
+          <strong>83.50%</strong>
+          <span>Cross Validation</span>
+          <small>5-fold mean accuracy</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- RECOGNITION -->
+    <section id="recognize" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">IMAGE CLASSIFICATION</div>
+        <h2>Recognize a Celebrity</h2>
+        <p>
+          Upload an image and let the trained model predict the celebrity.
+          JPG, PNG and WEBP supported. Maximum size: 10 MB.
+        </p>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert error-alert">{{ errorMessage() }}</div>
+      }
+
+      @if (successMessage()) {
+        <div class="alert success-alert">{{ successMessage() }}</div>
+      }
+
+      <div class="recognition-layout">
+
+        <!-- UPLOAD PANEL -->
+        <div class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Upload Image</h3>
+              <p>Select or drag an image into the upload area.</p>
+            </div>
+            <span class="ready-pill"><i></i> Ready</span>
+          </div>
+
+          <div class="drop-zone"
+            [class.dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)">
+
+            @if (imagePreview()) {
+              <div class="preview-wrap">
+                <img class="preview-image" [src]="imagePreview()" alt="Selected image">
+
+                <div class="preview-file">
+                  <strong>{{ selectedFile()?.name }}</strong>
+                  <span>Image selected successfully</span>
+                </div>
+
+                <button class="text-button danger-text" type="button"
+                  (click)="resetSelection()">Remove image</button>
+              </div>
+            } @else {
+              <div class="upload-prompt">
+                <div class="upload-symbol">↑</div>
+                <h3>Drop your image here</h3>
+                <p>Choose a photograph to begin recognition.</p>
+
+                <label class="browse-button">
+                  Browse Files
+                  <input type="file" hidden
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    (change)="onFileSelected($event)">
+                </label>
+
+                <small>JPG · PNG · WEBP · Maximum 10 MB</small>
+              </div>
+            }
+          </div>
+
+          <button class="primary-button full-button"
+            type="button"
+            [disabled]="!selectedFile() || isLoading()"
+            (click)="predictCelebrity()">
+
+            @if (isLoading()) {
+              <span class="spinner"></span> Analyzing Image...
+            } @else {
+              Predict Celebrity →
+            }
+          </button>
+
+          <p class="privacy-note">
+            Your image is processed through your locally running FastAPI backend.
+          </p>
+        </div>
+
+        <!-- RESULT PANEL -->
+        <div class="panel result-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Recognition Result</h3>
+              <p>Your model prediction will appear here.</p>
+            </div>
+            <span class="result-status">MODEL OUTPUT</span>
+          </div>
+
+          @if (isLoading()) {
+            <div class="empty-result">
+              <div class="spinner"></div>
+              <h3>Analyzing Image</h3>
+              <p>Please wait while the model processes the selected image.</p>
+            </div>
+          } @else if (prediction(); as result) {
+            <div class="result-content">
+              @if (annotatedImage()) {
+                <img class="annotated-image"
+                  [src]="annotatedImage()"
+                  alt="Annotated recognition result">
+              }
+
+              <span class="result-kicker">PREDICTED CELEBRITY</span>
+              <h2>{{ result.celebrity }}</h2>
+
+              <p>Celebrity category predicted by the trained SVM classifier.</p>
+
+              <div class="result-metrics">
+                <div>
+                  <strong>{{ result.detected_faces ?? 0 }}</strong>
+                  <span>Detected faces</span>
+                </div>
+                <div>
+                  <strong>{{ result.image_width ?? '—' }} × {{ result.image_height ?? '—' }}</strong>
+                  <span>Image dimensions</span>
+                </div>
+              </div>
+
+              <p class="disclaimer">
+                This is a closed-set classifier. Its prediction is limited
+                to the nine celebrity categories in the training dataset.
+              </p>
+            </div>
+          } @else {
+            <div class="empty-result">
+              <div class="empty-result-icon">◎</div>
+              <h3>Waiting for an Image</h3>
+              <p>Upload an image and click Predict Celebrity to see the result.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- CELEBRITY GALLERY -->
+    <section id="gallery" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">SUPPORTED CELEBRITY CLASSES</div>
+        <h2>Celebrity Gallery</h2>
+        <p>
+          Explore the nine celebrity categories supported by the trained
+          FaceSpotlight classification model.
+        </p>
+      </div>
+
+      <div class="gallery-grid">
+        @for (person of celebrityGallery; track person.name) {
+          <button class="gallery-card" type="button"
+            (click)="openGalleryPreview(person)">
+
+            <div class="gallery-image-wrap">
+              <img class="gallery-image"
+                [src]="person.image"
+                [alt]="person.name"
+                loading="lazy">
+
+              <span class="gallery-view-hint">View Image ↗</span>
+            </div>
+
+            <div class="gallery-card-info">
+              <div>
+                <h3>{{ person.name }}</h3>
+                <span>{{ person.category }}</span><br>
+                <small>{{ person.imageCount }} cropped images</small>
+              </div>
+              <strong>View →</strong>
+            </div>
+          </button>
+        }
+      </div>
+
+      <p class="gallery-note">
+        Image counts represent the available cropped images in each
+        celebrity category of the training dataset.
+      </p>
+    </section>
+
+    <!-- GALLERY PREVIEW MODAL -->
+    @if (selectedGalleryCelebrity(); as person) {
+      <div class="gallery-modal" (click)="closeGalleryPreview()">
+        <div class="gallery-modal-content" (click)="$event.stopPropagation()">
+
+          <button class="gallery-modal-close" type="button"
+            (click)="closeGalleryPreview()">×</button>
+
+          <img class="gallery-modal-image"
+            [src]="person.image"
+            [alt]="person.name">
+
+          <div class="gallery-modal-caption">
+            <div>
+              <h3>{{ person.name }}</h3>
+              <p>{{ person.category }} · Celebrity category</p>
+            </div>
+            <strong>{{ person.imageCount }} Images</strong>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- HISTORY -->
+    <section id="history" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">PREVIOUS CLASSIFICATIONS</div>
+        <h2>Prediction History</h2>
+        <p>Review your recent recognition results.</p>
+      </div>
+
+      <div class="panel history-panel">
+
+        <div class="history-toolbar">
+          <input class="search-input" type="search"
+            placeholder="Search celebrity or file name..."
+            [value]="historySearch()"
+            (input)="historySearch.set($any($event.target).value)">
+
+          <select class="filter-select"
+            [value]="historyFilter()"
+            (change)="historyFilter.set($any($event.target).value)">
+            <option value="all">All Celebrities</option>
+            @for (name of celebrityNames; track name) {
+              <option [value]="name">{{ name }}</option>
+            }
+          </select>
+
+          <div class="toolbar-actions">
+            <button class="secondary-button small-button"
+              type="button"
+              [disabled]="predictionHistory().length === 0"
+              (click)="exportHistory()">Export CSV</button>
+
+            <button class="secondary-button small-button"
+              type="button"
+              [disabled]="predictionHistory().length === 0"
+              (click)="clearHistory()">Clear All</button>
+          </div>
+        </div>
+
+        @if (filteredHistory().length > 0) {
+          <div class="history-list">
+            @for (item of filteredHistory(); track item.id) {
+              <div class="history-row">
+                <div class="history-avatar">◎</div>
+
+                <div class="history-main">
+                  <strong>{{ item.celebrity }}</strong>
+                  <span>{{ item.fileName }}</span>
+                  <small>{{ formatDate(item.predictionTime) }}</small>
+                </div>
+
+                <div class="history-count">
+                  <strong>{{ item.detectedFaces }}</strong>
+                  <span>Faces</span>
+                </div>
+
+                <button class="icon-button" type="button"
+                  title="Delete record"
+                  (click)="deleteHistoryItem(item.id)">×</button>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state compact">
+            <span>◷</span>
+            <h3>No Predictions Found</h3>
+            <p>Your prediction history will appear here.</p>
+          </div>
+        }
+
+        <p class="history-footnote">
+          Your latest prediction records are stored locally in this browser.
+        </p>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="analytics" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">PREDICTION STATISTICS</div>
+        <h2>Analytics Dashboard</h2>
+        <p>Explore the distribution of your saved predictions.</p>
+      </div>
+
+      <div class="analytics-summary">
+        <article class="stat-card">
+          <strong>{{ totalPredictions() }}</strong>
+          <span>Total Predictions</span>
+          <small>All saved records</small>
+        </article>
+
+        <article class="stat-card">
+          <strong>{{ mostPredictedCelebrity() }}</strong>
+          <span>Most Predicted</span>
+          <small>Top predicted category</small>
+        </article>
+
+        <article class="stat-card">
+          <strong>9</strong>
+          <span>Available Classes</span>
+          <small>Model output categories</small>
+        </article>
+      </div>
+
+      <div class="panel chart-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Predictions by Celebrity</h3>
+            <p>Distribution based on your saved prediction history.</p>
+          </div>
+        </div>
+
+        <div class="bar-chart">
+          @for (item of predictionDistribution(); track item.name) {
+            <div class="bar-row">
+              <span>{{ item.name }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width]="item.width"></div>
+              </div>
+              <strong>{{ item.count }}</strong>
+            </div>
+          }
+        </div>
+
+        @if (totalPredictions() === 0) {
+          <p class="muted-copy">Run a prediction to populate this chart.</p>
+        }
+      </div>
+    </section>
+
+    <!-- MODEL INSIGHTS -->
+    <section id="model-insights" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">TECHNICAL OVERVIEW</div>
+        <h2>How the Model Works</h2>
+        <p>
+          FaceSpotlight follows a computer vision and machine learning pipeline
+          to classify celebrity face images.
+        </p>
+      </div>
+
+      <div class="pipeline-grid">
+        <article class="pipeline-card">
+          <span class="step-number">01</span>
+          <span class="step-icon">◎</span>
+          <h3>Face Detection</h3>
+          <p>OpenCV Haar Cascade detects face regions and selects the largest detected region.</p>
+        </article>
+
+        <article class="pipeline-card">
+          <span class="step-number">02</span>
+          <span class="step-icon">▣</span>
+          <h3>Preprocessing</h3>
+          <p>The selected face is converted to grayscale and resized to 100 × 100 pixels.</p>
+        </article>
+
+        <article class="pipeline-card">
+          <span class="step-number">03</span>
+          <span class="step-icon">⌗</span>
+          <h3>HOG Extraction</h3>
+          <p>Histogram of Oriented Gradients extracts local edge and gradient information.</p>
+        </article>
+
+        <article class="pipeline-card final-step">
+          <span class="step-number">04</span>
+          <span class="step-icon">✦</span>
+          <h3>SVM Prediction</h3>
+          <p>An RBF-kernel Support Vector Machine predicts one of nine known classes.</p>
+        </article>
+      </div>
+
+      <div class="two-column-info">
+        <div class="info-panel">
+          <h3>HOG Configuration</h3>
+          <div class="parameter-list">
+            <div><span>Image size</span><strong>100 × 100</strong></div>
+            <div><span>Orientations</span><strong>9</strong></div>
+            <div><span>Pixels per cell</span><strong>8 × 8</strong></div>
+            <div><span>Cells per block</span><strong>2 × 2</strong></div>
+            <div><span>Feature dimension</span><strong>4,356</strong></div>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <h3>SVM Configuration</h3>
+          <div class="parameter-list">
+            <div><span>Kernel</span><strong>RBF</strong></div>
+            <div><span>C</span><strong>5</strong></div>
+            <div><span>Gamma</span><strong>0.0001</strong></div>
+            <div><span>Class weight</span><strong>Balanced</strong></div>
+            <div><span>Scaler</span><strong>StandardScaler</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVALUATION -->
+    <section id="evaluation" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">MODEL PERFORMANCE</div>
+        <h2>Model Evaluation</h2>
+        <p>Evaluation results from cross-validation and an external test set.</p>
+      </div>
+
+      <div class="evaluation-cards">
+        <article class="evaluation-card">
+          <span>5-FOLD CROSS VALIDATION</span>
+          <strong>83.50%</strong>
+          <p>Mean accuracy</p>
+          <small>Standard deviation: 2.44%</small>
+        </article>
+
+        <article class="evaluation-card">
+          <span>EXTERNAL TEST SET</span>
+          <strong>61.90%</strong>
+          <p>End-to-end accuracy</p>
+          <small>39 correct predictions out of 63 images</small>
+        </article>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Classification Report</h3>
+            <p>Per-class cross-validation metrics.</p>
+          </div>
+        </div>
+
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Celebrity</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1 Score</th>
+                <th>Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of classificationReport; track row.name) {
+                <tr>
+                  <td><strong>{{ row.name }}</strong></td>
+                  <td>{{ row.precision }}</td>
+                  <td>{{ row.recall }}</td>
+                  <td>{{ row.f1 }}</td>
+                  <td>{{ row.support }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Confusion Matrix</h3>
+            <p>Actual classes compared with predicted classes.</p>
+          </div>
+        </div>
+
+        <div class="matrix-wrap">
+          <div class="matrix-grid">
+            <div class="matrix-head">Actual / Predicted</div>
+
+            @for (name of celebrityNames; track name) {
+              <div class="matrix-head">{{ name }}</div>
+            }
+
+            @for (row of confusionMatrix; track $index; let i = $index) {
+              <div class="matrix-side">{{ celebrityNames[i] }}</div>
+
+              @for (value of row; track $index; let j = $index) {
+                <div class="matrix-cell"
+                  [class.diagonal]="i === j"
+                  [style.background]="getHeatStyle(value)">
+                  {{ value }}
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Training Dataset Distribution</h3>
+            <p>Number of cropped images available per celebrity.</p>
+          </div>
+        </div>
+
+        <div class="dataset-bars">
+          @for (item of datasetDistribution; track item.name) {
+            <div class="dataset-row">
+              <span>{{ item.name }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width]="getBarWidth(item.count)"></div>
+              </div>
+              <strong>{{ item.count }}</strong>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="note-box">
+        External test set: 63 images. Four images were not successfully
+        processed. Classification accuracy among processed images was
+        66.1% (39/59), while end-to-end accuracy was 61.9% (39/63).
+        Results are preliminary and may vary with image quality, lighting,
+        pose and face detection.
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section-wrap section-block">
+
+      <div class="section-heading">
+        <div class="eyebrow">PROJECT INFORMATION</div>
+        <h2>About FaceSpotlight</h2>
+        <p>Learn about the purpose and architecture of this project.</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="info-panel">
+          <h3>Project Overview</h3>
+          <p>
+            FaceSpotlight is a closed-set celebrity face classification
+            system. It predicts one of nine celebrity categories represented
+            in its training dataset. It is not a general-purpose identity
+            verification system.
+          </p>
+        </div>
+
+        <div class="info-panel">
+          <h3>Application Architecture</h3>
+          <p>
+            Angular provides the user interface, FastAPI exposes the
+            prediction endpoint, and the trained preprocessing and SVM
+            pipeline performs image classification.
+          </p>
+        </div>
+      </div>
+
+      <div class="tech-tags">
+        <span>Python</span>
+        <span>OpenCV</span>
+        <span>HOG</span>
+        <span>Scikit-learn</span>
+        <span>RBF SVM</span>
+        <span>FastAPI</span>
+        <span>Angular</span>
+        <span>TypeScript</span>
+      </div>
+
+      <div class="info-panel" style="margin-top:18px">
+        <h3>Supported Celebrity Categories</h3>
+        <p>{{ celebrityNames.join(' · ') }}</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="brand">
+      <span class="brand-mark">FS</span>
+      <span>Face<span class="brand-accent">Spotlight</span></span>
+    </div>
+
+    <p>Celebrity Face Recognition · HOG + RBF SVM</p>
+    <span>Angular + FastAPI</span>
+  </footer>
+
+</div>
