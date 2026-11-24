@@ -7,12 +7,15 @@ The application identifies faces belonging to 9 celebrity categories through a m
 ## Screenshots
 
 ### Home Dashboard
+
 ![FaceSpotlight Home Dashboard](screenshots/home-dashboard.png)
 
 ### Celebrity Recognition Result
+
 ![Alia Face Recognition Result](screenshots/alia-prediction.png)
 
 ### Analytics Dashboard
+
 ![FaceSpotlight Analytics Dashboard](screenshots/analytics-dashboard.png)
 
 ## Features
@@ -37,6 +40,8 @@ The application identifies faces belonging to 9 celebrity categories through a m
 
 The project uses a curated celebrity face image dataset covering nine celebrity categories. The dataset was used during the internship project.
 
+**Note:** The original dataset is kept locally and is not included in this repository.
+
 ## Project Structure
 
 ```text
@@ -53,11 +58,13 @@ FaceSpotlight/
 │       └── label_encoder.pkl
 ├── notebook/
 │   └── FaceSpotlight_Final.ipynb
+├── screenshots/
+│   ├── home-dashboard.png
+│   ├── alia-prediction.png
+│   └── analytics-dashboard.png
 ├── .gitignore
 └── README.md
 ```
-
-**Note:** The original dataset is kept locally and is not included in this repository.
 
 ## Installation and Setup
 
@@ -102,14 +109,14 @@ Open the application:
 
 ## Model Evaluation
 
-The model was evaluated using two separate evaluation methods:
+The model was evaluated using two separate evaluation methods.
 
 | Evaluation | Result |
 |---|---:|
-| Recognition categories | 9 |
+| Recognition Categories | 9 |
 | 5-Fold Stratified Cross-Validation Accuracy | 83.50% |
-| External Evaluation Accuracy | 66.1% |
-| Successfully Processed External Images | 59 |
+| External Evaluation Accuracy (59 successfully processed images) | 66.1% |
+| End-to-End Accuracy (63 external images) | 61.9% |
 
 *Cross-validation and external evaluation results are reported separately.*
 
@@ -125,3 +132,4 @@ The model was evaluated using two separate evaluation methods:
 - Improve face detection and recognition accuracy.
 - Add support for unknown-face detection.
 - Improve model generalization across different lighting conditions and image qualities.
+
