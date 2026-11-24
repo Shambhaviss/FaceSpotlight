@@ -33,6 +33,10 @@ The application identifies faces belonging to 9 celebrity categories through a m
 - **Machine Learning:** HOG, StandardScaler, RBF SVM
 - **Model Storage:** Joblib
 
+## Dataset
+
+The project uses a curated celebrity face image dataset covering nine celebrity categories. The dataset was used during the internship project.
+
 ## Project Structure
 
 ```text
