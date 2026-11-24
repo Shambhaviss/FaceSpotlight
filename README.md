@@ -110,9 +110,3 @@ The model was evaluated using two separate evaluation methods:
 - Improve face detection and recognition accuracy.
 - Add support for unknown-face detection.
 - Improve model generalization across different lighting conditions and image qualities.
-
-## Author
-
-**Shambhavi Shrivastava**
-
-GitHub: [Shambhaviss](https://github.com/Shambhaviss)
