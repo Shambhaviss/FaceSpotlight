@@ -4,6 +4,17 @@ FaceSpotlight is a celebrity face recognition application built using Python, Op
 
 The application identifies faces belonging to 9 celebrity categories through a machine learning model and provides an interactive Angular dashboard.
 
+## Screenshots
+
+### Home Dashboard
+![FaceSpotlight Home Dashboard](screenshots/home-dashboard.png)
+
+### Celebrity Recognition Result
+![Alia Face Recognition Result](screenshots/alia-prediction.png)
+
+### Analytics Dashboard
+![FaceSpotlight Analytics Dashboard](screenshots/analytics-dashboard.png)
+
 ## Features
 
 - Recognizes 9 celebrity categories.
