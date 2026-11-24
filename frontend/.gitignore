@@ -18,3 +18,6 @@ coverage/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Training dataset
+dataset/
